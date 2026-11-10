@@ -39,4 +39,14 @@ class AttendanceRecordPolicy
     {
         return $actor->isSuperUser() && $actor->is_active && ! $actor->mustChangePassword();
     }
+
+    public function create(User $actor): bool
+    {
+        return $this->manage($actor);
+    }
+
+    public function update(User $actor, AttendanceRecord $record): bool
+    {
+        return $this->manage($actor);
+    }
 }

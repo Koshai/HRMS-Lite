@@ -26,6 +26,11 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::post('my-attendance/check-out', [MyAttendanceController::class, 'checkOut'])->name('attendance.check-out');
 
         Route::get('attendance', [AdminAttendanceController::class, 'index'])->name('attendance.index');
+        Route::get('attendance/create', [AdminAttendanceController::class, 'create'])->name('attendance.create');
+        Route::post('attendance', [AdminAttendanceController::class, 'store'])->name('attendance.store');
+        Route::get('attendance/{attendance}', [AdminAttendanceController::class, 'show'])->name('attendance.show');
+        Route::get('attendance/{attendance}/edit', [AdminAttendanceController::class, 'edit'])->name('attendance.edit');
+        Route::put('attendance/{attendance}', [AdminAttendanceController::class, 'update'])->name('attendance.update');
 
         Route::get('employees', [EmployeeAdminController::class, 'index'])->name('employees.index');
         Route::get('employees/create', [EmployeeAdminController::class, 'create'])->name('employees.create');

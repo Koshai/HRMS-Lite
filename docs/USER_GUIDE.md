@@ -1,6 +1,6 @@
 # HRMS Lite — User guide
 
-Accurate for **M1** (employee provisioning) and **M2A** (employee self-attendance). Admin manual attendance is M2B; salary remains planned.
+Accurate for **M2** (daily attendance). Salary remains planned for M3.
 
 ## Super user
 1. Sign in with the account created by `php artisan hrms-lite:create-super-user`.
@@ -8,8 +8,11 @@ Accurate for **M1** (employee provisioning) and **M2A** (employee self-attendanc
 3. Share the temporary password securely outside the app. The password is hashed immediately and cannot be viewed again in HRMS Lite.
 4. Open an employee record to edit details, reset a temporary password, deactivate, or reactivate.
 5. Deactivate staff who have left. Historical employee records remain; login and existing sessions are blocked until reactivation.
-6. Open **Attendance** to list and filter all employee attendance records. Manual create/correct (with required reason and audit) ships in M2B.
-7. Salary workflows ship in a later milestone.
+6. Open **Attendance** to list and filter records by employee and date range.
+7. Use **Add attendance** for manual entry: employee, work date, local check-in/out times, optional “check-out is next calendar day”, and a required reason. Times are entered in the installation timezone and stored as UTC.
+8. Open a record to view details and the append-only correction audit. Use **Correct** to change times without changing the original work date; a reason is required. Concurrent edits that see stale punch times are rejected.
+9. Super users without a linked employee profile cannot use My Attendance punches; use manual entry instead.
+10. Salary workflows ship in a later milestone.
 
 ## Employee
 1. Sign in with the email and temporary password from the super user.
@@ -26,6 +29,7 @@ Accurate for **M1** (employee provisioning) and **M2A** (employee self-attendanc
 - Login attempts are rate-limited.
 - Inactive accounts cannot authenticate or punch attendance.
 - Attendance stores UTC instants; the UI displays the installation timezone.
+- Manual attendance create/correct writes an append-only audit event with actor, before/after values, and reason.
 
 ## Limitations
-Paid/Unpaid salary status (future module) is an administrative confirmation only. This product does not send money, create official payslips, calculate taxes, or validate financial transfers. Maximum single attendance duration defaults to 16 hours (`HRMS_ATTENDANCE_MAX_HOURS`).
+Paid/Unpaid salary status (future module) is an administrative confirmation only. This product does not send money, create official payslips, calculate taxes, or validate financial transfers. Maximum single attendance duration defaults to 16 hours (`HRMS_ATTENDANCE_MAX_HOURS`). One attendance record is allowed per employee per work date.

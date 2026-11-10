@@ -2,8 +2,11 @@
     <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
             <h1 class="text-3xl font-semibold tracking-tight">Attendance</h1>
-            <p class="mt-1 text-sm text-slate-600">All employee attendance ({{ $timezone }}). Manual entry arrives in M2B.</p>
+            <p class="mt-1 text-sm text-slate-600">All employee attendance ({{ $timezone }}).</p>
         </div>
+        @can('create', App\Models\AttendanceRecord::class)
+            <a href="{{ route('attendance.create') }}" class="rounded-md bg-teal-800 px-4 py-2 text-sm font-medium text-white hover:bg-teal-900">Add attendance</a>
+        @endcan
     </div>
 
     <form method="GET" action="{{ route('attendance.index') }}" class="mb-4 grid gap-3 sm:grid-cols-4">
@@ -29,6 +32,7 @@
                     <th class="px-4 py-3 font-medium">Check in</th>
                     <th class="px-4 py-3 font-medium">Check out</th>
                     <th class="px-4 py-3 font-medium">Status</th>
+                    <th class="px-4 py-3 font-medium"></th>
                 </tr>
             </thead>
             <tbody>
@@ -39,10 +43,13 @@
                         <td class="px-4 py-3">{{ $formatLocal($record->check_in_at) }}</td>
                         <td class="px-4 py-3">{{ $formatLocal($record->check_out_at) ?: '—' }}</td>
                         <td class="px-4 py-3">{{ $record->isOpen() ? 'Open' : 'Closed' }}</td>
+                        <td class="px-4 py-3">
+                            <a href="{{ route('attendance.show', $record) }}" class="text-teal-900 hover:underline">View</a>
+                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-8 text-center text-slate-500">No attendance records found.</td>
+                        <td colspan="6" class="px-4 py-8 text-center text-slate-500">No attendance records found.</td>
                     </tr>
                 @endforelse
             </tbody>

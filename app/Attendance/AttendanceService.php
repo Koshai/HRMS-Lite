@@ -3,6 +3,7 @@
 namespace App\Attendance;
 
 use App\Models\AttendanceRecord;
+use App\Models\AuditEvent;
 use App\Models\Employee;
 use App\Models\User;
 use Carbon\CarbonImmutable;
@@ -189,20 +190,235 @@ class AttendanceService
         });
     }
 
-    public function assertValidWindow(CarbonImmutable $checkInAt, CarbonImmutable $checkOutAt): void
+    public function assertValidWindow(CarbonImmutable $checkInAt, ?CarbonImmutable $checkOutAt): void
     {
+        if ($checkOutAt === null) {
+            return;
+        }
+
         if ($checkOutAt->lessThanOrEqualTo($checkInAt)) {
             throw ValidationException::withMessages([
-                'attendance' => __('Check-out must be after check-in.'),
+                'check_out_time' => __('Check-out must be after check-in.'),
             ]);
         }
 
         $maxHours = $this->maxHours();
         if ($checkOutAt->greaterThan($checkInAt->addHours($maxHours))) {
             throw ValidationException::withMessages([
-                'attendance' => __('Attendance cannot exceed :hours hours.', ['hours' => $maxHours]),
+                'check_out_time' => __('Attendance cannot exceed :hours hours.', ['hours' => $maxHours]),
             ]);
         }
+    }
+
+    /**
+     * @param  array{
+     *     work_date: string,
+     *     check_in_time: string,
+     *     check_out_time?: string|null,
+     *     checkout_next_day?: bool,
+     *     reason: string
+     * }  $data
+     */
+    public function createManual(Employee $employee, User $actor, array $data): AttendanceRecord
+    {
+        $this->assertEligibleActor($actor);
+        $this->assertActiveEmployee($employee);
+        $reason = $this->validatedReason($data['reason'] ?? null);
+
+        [$checkInAt, $checkOutAt] = $this->resolveLocalTimes(
+            $data['work_date'],
+            $data['check_in_time'],
+            $data['check_out_time'] ?? null,
+            (bool) ($data['checkout_next_day'] ?? false),
+        );
+
+        $this->assertValidWindow($checkInAt, $checkOutAt);
+
+        try {
+            return DB::transaction(function () use ($employee, $actor, $data, $checkInAt, $checkOutAt, $reason) {
+                $this->lockEmployee($employee);
+
+                if (AttendanceRecord::query()
+                    ->where('employee_id', $employee->id)
+                    ->whereDate('work_date', $data['work_date'])
+                    ->exists()) {
+                    throw ValidationException::withMessages([
+                        'work_date' => __('An attendance record already exists for this employee and date.'),
+                    ]);
+                }
+
+                $record = AttendanceRecord::query()->create([
+                    'employee_id' => $employee->id,
+                    'work_date' => $data['work_date'],
+                    'check_in_at' => $checkInAt,
+                    'check_out_at' => $checkOutAt,
+                    'created_by' => $actor->id,
+                    'updated_by' => $actor->id,
+                ]);
+
+                $this->audit($actor, $record, 'attendance.manual_create', null, $this->snapshot($record), $reason);
+
+                return $record->fresh();
+            });
+        } catch (QueryException $exception) {
+            if ($this->isUniqueViolation($exception)) {
+                throw ValidationException::withMessages([
+                    'work_date' => __('An attendance record already exists for this employee and date.'),
+                ]);
+            }
+
+            throw $exception;
+        }
+    }
+
+    /**
+     * @param  array{
+     *     check_in_time: string,
+     *     check_out_time?: string|null,
+     *     checkout_next_day?: bool,
+     *     reason: string,
+     *     expected_check_in_at?: string|null,
+     *     expected_check_out_at?: string|null
+     * }  $data
+     */
+    public function correctManual(AttendanceRecord $record, User $actor, array $data): AttendanceRecord
+    {
+        $this->assertEligibleActor($actor);
+        $reason = $this->validatedReason($data['reason'] ?? null);
+
+        $workDate = $record->work_date->toDateString();
+        [$checkInAt, $checkOutAt] = $this->resolveLocalTimes(
+            $workDate,
+            $data['check_in_time'],
+            $data['check_out_time'] ?? null,
+            (bool) ($data['checkout_next_day'] ?? false),
+        );
+        $this->assertValidWindow($checkInAt, $checkOutAt);
+
+        return DB::transaction(function () use ($record, $actor, $data, $checkInAt, $checkOutAt, $reason) {
+            $locked = AttendanceRecord::query()->whereKey($record->id)->lockForUpdate()->firstOrFail();
+
+            if (array_key_exists('expected_check_in_at', $data)) {
+                $expectedIn = $data['expected_check_in_at'];
+                $expectedOut = $data['expected_check_out_at'] ?? null;
+                $actualIn = optional($locked->check_in_at)->toIso8601String();
+                $actualOut = optional($locked->check_out_at)->toIso8601String();
+
+                if ($expectedIn !== $actualIn || $expectedOut !== $actualOut) {
+                    throw ValidationException::withMessages([
+                        'attendance' => __('This attendance record was changed by someone else. Reload and try again.'),
+                    ]);
+                }
+            }
+
+            $before = $this->snapshot($locked);
+
+            $locked->forceFill([
+                'check_in_at' => $checkInAt,
+                'check_out_at' => $checkOutAt,
+                'updated_by' => $actor->id,
+            ])->save();
+
+            $after = $this->snapshot($locked->fresh());
+            $this->audit($actor, $locked, 'attendance.manual_correct', $before, $after, $reason);
+
+            return $locked->fresh();
+        });
+    }
+
+    /**
+     * @return array{0: CarbonImmutable, 1: ?CarbonImmutable}
+     */
+    public function resolveLocalTimes(string $workDate, string $checkInTime, ?string $checkOutTime, bool $checkoutNextDay): array
+    {
+        if (! preg_match('/^\d{4}-\d{2}-\d{2}$/', $workDate)) {
+            throw ValidationException::withMessages([
+                'work_date' => __('Enter a valid attendance date.'),
+            ]);
+        }
+
+        $checkInAt = $this->localWallToUtc($workDate, $checkInTime, 'check_in_time');
+        $checkOutAt = null;
+
+        if (filled($checkOutTime)) {
+            $checkOutDate = $checkoutNextDay
+                ? CarbonImmutable::parse($workDate, $this->timezone())->addDay()->toDateString()
+                : $workDate;
+            $checkOutAt = $this->localWallToUtc($checkOutDate, $checkOutTime, 'check_out_time');
+        } elseif ($checkoutNextDay) {
+            throw ValidationException::withMessages([
+                'check_out_time' => __('Provide a check-out time when marking next-day check-out.'),
+            ]);
+        }
+
+        return [$checkInAt, $checkOutAt];
+    }
+
+    private function localWallToUtc(string $date, string $time, string $field): CarbonImmutable
+    {
+        if (! preg_match('/^\d{2}:\d{2}$/', $time)) {
+            throw ValidationException::withMessages([
+                $field => __('Enter a valid time as HH:MM.'),
+            ]);
+        }
+
+        $local = CarbonImmutable::createFromFormat(
+            '!Y-m-d H:i',
+            $date.' '.$time,
+            $this->timezone()
+        );
+
+        if ($local === false || $local->format('Y-m-d H:i') !== $date.' '.$time) {
+            throw ValidationException::withMessages([
+                $field => __('Enter a valid local date and time.'),
+            ]);
+        }
+
+        return $local->utc();
+    }
+
+    private function validatedReason(?string $reason): string
+    {
+        $reason = trim((string) $reason);
+
+        if ($reason === '' || mb_strlen($reason) > 2000) {
+            throw ValidationException::withMessages([
+                'reason' => __('A reason of at most 2000 characters is required.'),
+            ]);
+        }
+
+        return $reason;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function snapshot(AttendanceRecord $record): array
+    {
+        return [
+            'employee_id' => $record->employee_id,
+            'work_date' => $record->work_date?->toDateString(),
+            'check_in_at' => optional($record->check_in_at)->toIso8601String(),
+            'check_out_at' => optional($record->check_out_at)->toIso8601String(),
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $before
+     * @param  array<string, mixed>|null  $after
+     */
+    private function audit(User $actor, AttendanceRecord $record, string $action, ?array $before, ?array $after, string $reason): void
+    {
+        AuditEvent::query()->create([
+            'actor_user_id' => $actor->id,
+            'entity_type' => AttendanceRecord::class,
+            'entity_id' => $record->id,
+            'action' => $action,
+            'before_json' => $before,
+            'after_json' => $after,
+            'reason' => $reason,
+            'created_at' => $this->nowUtc(),
+        ]);
     }
 
     private function lockEmployee(Employee $employee): Employee
