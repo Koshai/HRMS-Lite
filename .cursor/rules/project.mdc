@@ -1,0 +1,5 @@
+---
+description: HRMS Lite repo workflow and project guardrails
+alwaysApply: true
+---
+Read the repository's AGENTS.md at session start and AGENTS.local.md when present. The separate private wiki is the canonical design history. Build one small, tested vertical slice at a time. Do not alter the original HRMS project or import its full payroll subsystem. Never use production employee data or secrets.
