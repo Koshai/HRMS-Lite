@@ -52,6 +52,6 @@ class AuthenticationTest extends TestCase
         $this->actingAs($user)
             ->get('/dashboard')
             ->assertOk()
-            ->assertSee('Super user placeholders', false);
+            ->assertSee('Employees', false);
     }
 }

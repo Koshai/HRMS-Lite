@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -31,6 +32,14 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * @return HasOne<Employee, $this>
+     */
+    public function employee(): HasOne
+    {
+        return $this->hasOne(Employee::class);
+    }
+
     public function isSuperUser(): bool
     {
         return $this->role === Role::SuperUser;
@@ -39,5 +48,10 @@ class User extends Authenticatable
     public function isEmployee(): bool
     {
         return $this->role === Role::Employee;
+    }
+
+    public function mustChangePassword(): bool
+    {
+        return (bool) $this->must_change_password;
     }
 }

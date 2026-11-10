@@ -8,9 +8,9 @@
         <div class="grid gap-4 sm:grid-cols-2">
             @can('access-admin')
                 <div class="rounded-xl border border-slate-200 bg-white p-5">
-                    <h2 class="font-semibold">Super user placeholders</h2>
+                    <h2 class="font-semibold">Super user</h2>
                     <ul class="mt-3 list-disc space-y-1 ps-5 text-sm text-slate-600">
-                        <li>Employees (M1)</li>
+                        <li><a href="{{ route('employees.index') }}" class="text-teal-900 hover:underline">Employees</a></li>
                         <li>Attendance (M2)</li>
                         <li>Salaries (M3)</li>
                     </ul>
@@ -19,9 +19,9 @@
 
             @can('access-employee-self-service')
                 <div class="rounded-xl border border-slate-200 bg-white p-5">
-                    <h2 class="font-semibold">Employee placeholders</h2>
+                    <h2 class="font-semibold">Employee</h2>
                     <ul class="mt-3 list-disc space-y-1 ps-5 text-sm text-slate-600">
-                        <li>My profile (M1)</li>
+                        <li><a href="{{ route('profile.mine') }}" class="text-teal-900 hover:underline">My profile</a></li>
                         <li>My attendance (M2)</li>
                         <li>My salaries (M3)</li>
                     </ul>
