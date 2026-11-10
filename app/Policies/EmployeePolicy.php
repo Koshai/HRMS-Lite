@@ -64,4 +64,13 @@ class EmployeePolicy
     {
         return $this->view($actor, $employee);
     }
+
+    public function punch(User $actor, Employee $employee): bool
+    {
+        return $actor->is_active
+            && ! $actor->mustChangePassword()
+            && $actor->isEmployee()
+            && $employee->is_active
+            && $employee->user_id === $actor->id;
+    }
 }

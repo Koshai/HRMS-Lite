@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\AdminAttendanceController;
 use App\Http\Controllers\EmployeeAdminController;
 use App\Http\Controllers\ForcedPasswordChangeController;
+use App\Http\Controllers\MyAttendanceController;
 use App\Http\Controllers\MyProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,6 +20,12 @@ Route::middleware(['auth', 'active'])->group(function () {
 
         Route::get('my-profile', [MyProfileController::class, 'show'])->name('profile.mine');
         Route::get('my-profile/photo', [MyProfileController::class, 'photo'])->name('profile.mine.photo');
+
+        Route::get('my-attendance', [MyAttendanceController::class, 'index'])->name('attendance.mine');
+        Route::post('my-attendance/check-in', [MyAttendanceController::class, 'checkIn'])->name('attendance.check-in');
+        Route::post('my-attendance/check-out', [MyAttendanceController::class, 'checkOut'])->name('attendance.check-out');
+
+        Route::get('attendance', [AdminAttendanceController::class, 'index'])->name('attendance.index');
 
         Route::get('employees', [EmployeeAdminController::class, 'index'])->name('employees.index');
         Route::get('employees/create', [EmployeeAdminController::class, 'create'])->name('employees.create');

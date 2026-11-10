@@ -11,7 +11,7 @@
                     <h2 class="font-semibold">Super user</h2>
                     <ul class="mt-3 list-disc space-y-1 ps-5 text-sm text-slate-600">
                         <li><a href="{{ route('employees.index') }}" class="text-teal-900 hover:underline">Employees</a></li>
-                        <li>Attendance (M2)</li>
+                        <li><a href="{{ route('attendance.index') }}" class="text-teal-900 hover:underline">Attendance</a></li>
                         <li>Salaries (M3)</li>
                     </ul>
                 </div>
@@ -22,7 +22,7 @@
                     <h2 class="font-semibold">Employee</h2>
                     <ul class="mt-3 list-disc space-y-1 ps-5 text-sm text-slate-600">
                         <li><a href="{{ route('profile.mine') }}" class="text-teal-900 hover:underline">My profile</a></li>
-                        <li>My attendance (M2)</li>
+                        <li><a href="{{ route('attendance.mine') }}" class="text-teal-900 hover:underline">My attendance</a></li>
                         <li>My salaries (M3)</li>
                     </ul>
                 </div>

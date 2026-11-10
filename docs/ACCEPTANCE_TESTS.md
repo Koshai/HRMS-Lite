@@ -11,11 +11,11 @@ Automate feature and unit tests with PHPUnit. Use Playwright for a small set of 
 | A06 | Employee opens another employee's profile URL | 403/404; no PII or images leaked |
 | A07 | Employee tries POST to employee/salary admin routes | 403, no database changes |
 | A08 | Photo MIME spoofed or too large | Rejected; no public file created |
-| A09 | Employee checks in twice / concurrent submissions | Exactly one valid open attendance; duplicate safely handled |
-| A10 | Employee checks out before check in | Rejected |
-| A11 | Employee checks out once | Correct timestamp, timezone display, and work date |
-| A12 | Super user manual attendance correction | Required reason, before/after and actor audited |
-| A13 | Attendance time crossing midnight | Explicit overnight choice, valid UTC instants |
+| A09 | Employee checks in twice / concurrent submissions | Exactly one valid open attendance; duplicate safely handled — **covered M2A** |
+| A10 | Employee checks out before check in | Rejected — **covered M2A** |
+| A11 | Employee checks out once | Correct timestamp, timezone display, and work date — **covered M2A** |
+| A12 | Super user manual attendance correction | Required reason, before/after and actor audited — planned M2B |
+| A13 | Attendance time crossing midnight | Explicit overnight choice, valid UTC instants — self overnight covered M2A; admin explicit next-day M2B |
 | A14 | Super user creates monthly salary | Unique month row, expected salary snapshot |
 | A15 | Super user changes current base salary | Prior monthly salary remains unchanged |
 | A16 | has_bonus=false and bonus_amount>0 | Rejected or normalized to zero according to contract |

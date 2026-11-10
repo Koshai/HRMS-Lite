@@ -25,7 +25,11 @@
                     @endcan
                     @if (auth()->user()->employee)
                         <a href="{{ route('profile.mine') }}" class="text-slate-700 hover:text-teal-800">My Profile</a>
+                        <a href="{{ route('attendance.mine') }}" class="text-slate-700 hover:text-teal-800">My Attendance</a>
                     @endif
+                    @can('manage', App\Models\AttendanceRecord::class)
+                        <a href="{{ route('attendance.index') }}" class="text-slate-700 hover:text-teal-800">Attendance</a>
+                    @endcan
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="text-slate-700 hover:text-teal-800">Log out</button>

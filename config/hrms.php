@@ -16,4 +16,16 @@ return [
 
     'currency' => env('HRMS_CURRENCY', 'BDT'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Attendance
+    |--------------------------------------------------------------------------
+    |
+    | Maximum open-to-close duration for a single attendance record. Overnight
+    | check-out is allowed when it stays within this window and after check-in.
+    |
+    */
+
+    'attendance_max_hours' => (int) env('HRMS_ATTENDANCE_MAX_HOURS', 16),
+
 ];
