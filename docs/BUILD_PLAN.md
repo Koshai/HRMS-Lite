@@ -29,9 +29,9 @@ Do not represent this as implemented until it exists and tests pass. Each phase 
 **Gate:** unique (employee,month), salary history survives base salary changes, concurrency safe, employee cannot edit status.
 
 ## M4 — Dashboard, acceptance and deployment
-- Lightweight two-role dashboards, mobile-friendly tables/forms.
-- Complete Playwright journeys, unit/feature tests, docs/user guide and human acceptance record.
-- cPanel staging deployment + HTTPS, DB backups and a verified restore drill; no production deployment without approval.
+- Lightweight two-role dashboards, mobile-friendly tables/forms. **M4B done.**
+- Complete Playwright journeys, unit/feature tests, docs/user guide and human acceptance record. **M4A Playwright A21–A23 done; M4D docs/UAT pending.**
+- cPanel staging deployment + HTTPS, DB backups and a verified restore drill; no production deployment without approval. **M4C preflight + docs + disposable restore drill done; live cPanel host outstanding.**
 **Gate:** complete admin and employee workflow, negative authorization, browser review, staging preflight.
 
 ## Delivery cadence

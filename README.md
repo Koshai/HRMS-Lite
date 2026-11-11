@@ -34,7 +34,15 @@ Sign in at `/login`. Public `/register` is disabled.
 | `composer ci:check` | Lint + tests (GitHub Actions `tests` workflow) |
 | `npm run build` | Vite/Tailwind production assets |
 
-Optional later: Playwright browser journeys (M4), MySQL-targeted concurrency tests (M2/M3).
+Browser journeys: `npm run test:e2e` (Playwright against a disposable SQLite fixture DB).  
+MySQL parity: `vendor/bin/phpunit -c phpunit.mysql.xml` against a disposable MySQL database only.
+
+## Operations
+
+- Preflight (read-only): `php artisan hrms-lite:preflight`
+- cPanel / Namecheap runbook: `docs/DEPLOYMENT_CPANEL.md`
+- Backup & restore drill: `docs/BACKUP_RESTORE.md`
+- Real hosting acceptance remains outstanding until an authorized cPanel preflight succeeds.
 
 ## Governance
 

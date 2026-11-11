@@ -26,6 +26,6 @@ Automate feature and unit tests with PHPUnit. Use Playwright for a small set of 
 | A21 | Browser: admin end-to-end workflow | Create employee > attendance > salary paid status — **covered M4A Playwright** |
 | A22 | Browser: employee end-to-end workflow | First login > password change > self punch > own salary — **covered M4A Playwright** |
 | A23 | Browser: mobile viewport | Functional navigation and no offscreen action buttons — **covered M4A/M4B** |
-| A24 | Deployment: backup/restore drill | Restored DB retains users, attendance, salary and audit — planned M4C |
+| A24 | Deployment: backup/restore drill | Restored DB retains users, attendance, salary and audit — **covered M4C** (disposable SQLite drill + docs; real cPanel host pending) |
 
 Test on SQLite then targeted MySQL tests for transactions, uniqueness, and concurrency. Never put real employee data in screenshots or fixtures.
