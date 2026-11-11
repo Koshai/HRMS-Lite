@@ -23,9 +23,9 @@ Automate feature and unit tests with PHPUnit. Use Playwright for a small set of 
 | A18 | Undo paid | Reason required, audit preserves prior paid history — **covered M3B** |
 | A19 | Duplicate salary same employee/month | One row only, readable validation error — **covered M3A** |
 | A20 | Employee views My Salaries | Own records only, cannot change paid status — **covered M3A** |
-| A21 | Browser: admin end-to-end workflow | Create employee > attendance > salary paid status |
-| A22 | Browser: employee end-to-end workflow | First login > password change > self punch > own salary |
-| A23 | Browser: mobile viewport | Functional navigation and no offscreen action buttons |
-| A24 | Deployment: backup/restore drill | Restored DB retains users, attendance, salary and audit |
+| A21 | Browser: admin end-to-end workflow | Create employee > attendance > salary paid status — **covered M4A Playwright** |
+| A22 | Browser: employee end-to-end workflow | First login > password change > self punch > own salary — **covered M4A Playwright** |
+| A23 | Browser: mobile viewport | Functional navigation and no offscreen action buttons — Playwright mobile project in M4A; dashboard polish M4B |
+| A24 | Deployment: backup/restore drill | Restored DB retains users, attendance, salary and audit — planned M4C |
 
 Test on SQLite then targeted MySQL tests for transactions, uniqueness, and concurrency. Never put real employee data in screenshots or fixtures.

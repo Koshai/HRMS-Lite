@@ -43,6 +43,53 @@ jobs:
       - name: Run CI checks
         run: composer ci:check
 
+  playwright:
+    name: playwright e2e
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: bcmath, pdo_sqlite, sqlite3, gd
+          tools: composer:v2
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Setup application
+        run: |
+          composer install --no-interaction --prefer-dist
+          cp .env.example .env
+          php artisan key:generate
+          npm ci
+          npm run build
+          npx playwright install --with-deps chromium
+
+      - name: Run Playwright journeys
+        run: npm run test:e2e
+        env:
+          E2E_PHP: php
+
+      - name: Upload Playwright artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+
   mysql:
     name: mysql verification
     runs-on: ubuntu-latest

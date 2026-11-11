@@ -29,3 +29,8 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 /.cursor/index/
+/.hrms-lite-e2e/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
