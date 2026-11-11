@@ -30,9 +30,9 @@ Do not represent this as implemented until it exists and tests pass. Each phase 
 
 ## M4 — Dashboard, acceptance and deployment
 - Lightweight two-role dashboards, mobile-friendly tables/forms. **M4B done.**
-- Complete Playwright journeys, unit/feature tests, docs/user guide and human acceptance record. **M4A Playwright A21–A23 done; M4D docs/UAT pending.**
+- Complete Playwright journeys, unit/feature tests, docs/user guide and human acceptance record. **M4A–M4D done** (see `docs/CLIENT_ACCEPTANCE_REPORT.md`).
 - cPanel staging deployment + HTTPS, DB backups and a verified restore drill; no production deployment without approval. **M4C preflight + docs + disposable restore drill done; live cPanel host outstanding.**
-**Gate:** complete admin and employee workflow, negative authorization, browser review, staging preflight.
+**Gate:** complete admin and employee workflow, negative authorization, browser review, staging preflight — **met on disposable environments; live host pending.**
 
 ## Delivery cadence
 Use 1 coherent commit per verified slice. Update `../hrms-lite-wiki/HANDOFF.md` with last commit, state of tests, what changed, unfinished items, exact next step. Do not start the next phase unless the previous acceptance gate is objectively met or a documented exception is approved.
