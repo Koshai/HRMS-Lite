@@ -56,6 +56,14 @@ class Employee extends Model
         return $this->hasMany(AttendanceRecord::class);
     }
 
+    /**
+     * @return HasMany<MonthlySalary, $this>
+     */
+    public function monthlySalaries(): HasMany
+    {
+        return $this->hasMany(MonthlySalary::class);
+    }
+
     public function hasPhoto(): bool
     {
         return filled($this->image_path);

@@ -16,13 +16,13 @@ Automate feature and unit tests with PHPUnit. Use Playwright for a small set of 
 | A11 | Employee checks out once | Correct timestamp, timezone display, and work date — **covered M2A** |
 | A12 | Super user manual attendance correction | Required reason, before/after and actor audited — **covered M2B** |
 | A13 | Attendance time crossing midnight | Explicit overnight choice, valid UTC instants — self overnight **M2A**; admin next-day flag **M2B** |
-| A14 | Super user creates monthly salary | Unique month row, expected salary snapshot |
-| A15 | Super user changes current base salary | Prior monthly salary remains unchanged |
-| A16 | has_bonus=false and bonus_amount>0 | Rejected or normalized to zero according to contract |
-| A17 | Mark salary paid | status paid, paid_at and paid_by set, audit appended |
-| A18 | Undo paid | Reason required, audit preserves prior paid history |
-| A19 | Duplicate salary same employee/month | One row only, readable validation error |
-| A20 | Employee views My Salaries | Own records only, cannot change paid status |
+| A14 | Super user creates monthly salary | Unique month row, expected salary snapshot — **covered M3A** |
+| A15 | Super user changes current base salary | Prior monthly salary remains unchanged — **covered M3A** |
+| A16 | has_bonus=false and bonus_amount>0 | Rejected when bonus > 0 — **covered M3A** |
+| A17 | Mark salary paid | status paid, paid_at and paid_by set, audit appended — planned M3B |
+| A18 | Undo paid | Reason required, audit preserves prior paid history — planned M3B |
+| A19 | Duplicate salary same employee/month | One row only, readable validation error — **covered M3A** |
+| A20 | Employee views My Salaries | Own records only, cannot change paid status — **covered M3A** |
 | A21 | Browser: admin end-to-end workflow | Create employee > attendance > salary paid status |
 | A22 | Browser: employee end-to-end workflow | First login > password change > self punch > own salary |
 | A23 | Browser: mobile viewport | Functional navigation and no offscreen action buttons |

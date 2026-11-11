@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\AdminAttendanceController;
+use App\Http\Controllers\AdminSalaryController;
 use App\Http\Controllers\EmployeeAdminController;
 use App\Http\Controllers\ForcedPasswordChangeController;
 use App\Http\Controllers\MyAttendanceController;
 use App\Http\Controllers\MyProfileController;
+use App\Http\Controllers\MySalaryController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'home')->name('home');
@@ -25,12 +27,21 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::post('my-attendance/check-in', [MyAttendanceController::class, 'checkIn'])->name('attendance.check-in');
         Route::post('my-attendance/check-out', [MyAttendanceController::class, 'checkOut'])->name('attendance.check-out');
 
+        Route::get('my-salaries', [MySalaryController::class, 'index'])->name('salaries.mine');
+
         Route::get('attendance', [AdminAttendanceController::class, 'index'])->name('attendance.index');
         Route::get('attendance/create', [AdminAttendanceController::class, 'create'])->name('attendance.create');
         Route::post('attendance', [AdminAttendanceController::class, 'store'])->name('attendance.store');
         Route::get('attendance/{attendance}', [AdminAttendanceController::class, 'show'])->name('attendance.show');
         Route::get('attendance/{attendance}/edit', [AdminAttendanceController::class, 'edit'])->name('attendance.edit');
         Route::put('attendance/{attendance}', [AdminAttendanceController::class, 'update'])->name('attendance.update');
+
+        Route::get('salaries', [AdminSalaryController::class, 'index'])->name('salaries.index');
+        Route::get('salaries/create', [AdminSalaryController::class, 'create'])->name('salaries.create');
+        Route::post('salaries', [AdminSalaryController::class, 'store'])->name('salaries.store');
+        Route::get('salaries/{salary}', [AdminSalaryController::class, 'show'])->name('salaries.show');
+        Route::get('salaries/{salary}/edit', [AdminSalaryController::class, 'edit'])->name('salaries.edit');
+        Route::put('salaries/{salary}', [AdminSalaryController::class, 'update'])->name('salaries.update');
 
         Route::get('employees', [EmployeeAdminController::class, 'index'])->name('employees.index');
         Route::get('employees/create', [EmployeeAdminController::class, 'create'])->name('employees.create');
