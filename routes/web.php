@@ -42,6 +42,8 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::get('salaries/{salary}', [AdminSalaryController::class, 'show'])->name('salaries.show');
         Route::get('salaries/{salary}/edit', [AdminSalaryController::class, 'edit'])->name('salaries.edit');
         Route::put('salaries/{salary}', [AdminSalaryController::class, 'update'])->name('salaries.update');
+        Route::post('salaries/{salary}/mark-paid', [AdminSalaryController::class, 'markPaid'])->name('salaries.mark-paid');
+        Route::post('salaries/{salary}/reverse-unpaid', [AdminSalaryController::class, 'reverseUnpaid'])->name('salaries.reverse-unpaid');
 
         Route::get('employees', [EmployeeAdminController::class, 'index'])->name('employees.index');
         Route::get('employees/create', [EmployeeAdminController::class, 'create'])->name('employees.create');

@@ -1,6 +1,6 @@
 # HRMS Lite — User guide
 
-Accurate for **M3A** (monthly salary records). Mark Paid / reverse unpaid ships in M3B. Attendance remains as in M2.
+Accurate for **M3** (monthly salary payment tracking). Attendance remains as in M2.
 
 ## Super user
 1. Sign in with the account created by `php artisan hrms-lite:create-super-user`.
@@ -13,8 +13,9 @@ Accurate for **M3A** (monthly salary records). Mark Paid / reverse unpaid ships 
 8. Open a record to view details and the append-only correction audit. Use **Correct** to change times without changing the original work date; a reason is required. Concurrent edits that see stale punch times are rejected.
 9. Super users without a linked employee profile cannot use My Attendance punches; use manual entry instead.
 10. Open **Salaries → Add monthly salary**. Choose employee and month. The salary amount defaults to the employee’s current base salary; confirm or adjust before saving. Optional bonus requires “Has bonus”. A reason is required. Records start as **Unpaid**. Missing months are not the same as Unpaid.
-11. Filter salaries by employee, month, and status. Totals show tracked Paid/Unpaid amounts (administrative confirmation only).
-12. Edit unpaid amounts with a required reason. Paid status changes ship in M3B.
+11. Filter salaries by employee, month, and status. Totals show tracked Paid/Unpaid amounts (administrative confirmation only — not bank proof).
+12. Edit unpaid amounts with a required reason and version check. Paid records cannot have amounts edited until reversed.
+13. On a salary detail page, use **Mark Paid** to confirm payment tracking (stores server time and your user). Repeated Mark Paid keeps the original timestamp and does not duplicate audit. Reverse to Unpaid requires a reason; prior paid details remain in audit history.
 
 ## Employee
 1. Sign in with the email and temporary password from the super user.
@@ -31,8 +32,9 @@ Accurate for **M3A** (monthly salary records). Mark Paid / reverse unpaid ships 
 - Login attempts are rate-limited.
 - Inactive accounts cannot authenticate or punch attendance.
 - Attendance stores UTC instants; the UI displays the installation timezone.
-- Manual attendance and salary create/edit write append-only audit events with actor, before/after values, and reason.
+- Manual attendance and salary create/edit/payment actions write append-only audit events with actor, before/after values, and reason.
 - Monthly salary amounts are decimal snapshots; changing an employee’s current base salary does not rewrite prior months.
+- Salary payment concurrency uses an explicit `version` column (not timestamp precision).
 
 ## Limitations
 Paid/Unpaid is an administrative confirmation only. This product does not send money, create official payslips, calculate taxes, or validate financial transfers. Maximum single attendance duration defaults to 16 hours (`HRMS_ATTENDANCE_MAX_HOURS`). One attendance record is allowed per employee per work date. One salary record is allowed per employee per month.

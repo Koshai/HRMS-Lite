@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Enums\SalaryStatus;
+use App\Http\Requests\MarkSalaryPaidRequest;
+use App\Http\Requests\ReverseSalaryUnpaidRequest;
 use App\Http\Requests\StoreMonthlySalaryRequest;
 use App\Http\Requests\UpdateMonthlySalaryRequest;
 use App\Models\AuditEvent;
@@ -143,5 +145,38 @@ class AdminSalaryController extends Controller
         return redirect()
             ->route('salaries.show', $salary)
             ->with('status', __('Salary amounts updated.'));
+    }
+
+    public function markPaid(
+        MarkSalaryPaidRequest $request,
+        MonthlySalary $salary,
+        SalaryService $salaries
+    ): RedirectResponse {
+        $beforeVersion = (int) $salary->version;
+        $updated = $salaries->markPaid(
+            $salary,
+            $request->user(),
+            (int) $request->validated('expected_version')
+        );
+
+        $status = (int) $updated->version === $beforeVersion && $updated->isPaid()
+            ? __('Already marked paid; original confirmation kept.')
+            : __('Marked as paid (administrative confirmation only).');
+
+        return redirect()
+            ->route('salaries.show', $salary)
+            ->with('status', $status);
+    }
+
+    public function reverseUnpaid(
+        ReverseSalaryUnpaidRequest $request,
+        MonthlySalary $salary,
+        SalaryService $salaries
+    ): RedirectResponse {
+        $salaries->reverseToUnpaid($salary, $request->user(), $request->validated());
+
+        return redirect()
+            ->route('salaries.show', $salary)
+            ->with('status', __('Reversed to unpaid. Prior paid confirmation remains in audit history.'));
     }
 }

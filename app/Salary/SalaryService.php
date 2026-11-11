@@ -201,6 +201,72 @@ class SalaryService
         });
     }
 
+    public function markPaid(MonthlySalary $salary, User $actor, int $expectedVersion): MonthlySalary
+    {
+        $this->assertEligibleActor($actor);
+
+        return DB::transaction(function () use ($salary, $actor, $expectedVersion) {
+            $locked = MonthlySalary::query()->whereKey($salary->id)->lockForUpdate()->firstOrFail();
+
+            if ($locked->isPaid()) {
+                // Idempotent: do not rewrite paid_at/paid_by or append duplicate audit.
+                return $locked->fresh(['employee.user', 'payer']);
+            }
+
+            $this->assertExpectedVersion($locked, $expectedVersion);
+
+            $before = $this->snapshot($locked);
+            $now = $this->nowUtc();
+
+            $locked->forceFill([
+                'given_status' => SalaryStatus::Paid,
+                'paid_at' => $now,
+                'paid_by' => $actor->id,
+                'version' => $locked->version + 1,
+            ])->save();
+
+            $after = $this->snapshot($locked->fresh());
+            $this->audit($actor, $locked, 'salary.mark_paid', $before, $after, 'Marked paid');
+
+            return $locked->fresh(['employee.user', 'payer']);
+        });
+    }
+
+    /**
+     * @param  array{reason: string, expected_version: int|string}  $data
+     */
+    public function reverseToUnpaid(MonthlySalary $salary, User $actor, array $data): MonthlySalary
+    {
+        $this->assertEligibleActor($actor);
+        $reason = $this->validatedReason($data['reason'] ?? null);
+        $expectedVersion = (int) ($data['expected_version'] ?? -1);
+
+        return DB::transaction(function () use ($salary, $actor, $reason, $expectedVersion) {
+            $locked = MonthlySalary::query()->whereKey($salary->id)->lockForUpdate()->firstOrFail();
+            $this->assertExpectedVersion($locked, $expectedVersion);
+
+            if ($locked->isUnpaid()) {
+                throw ValidationException::withMessages([
+                    'salary' => __('This salary record is already unpaid.'),
+                ]);
+            }
+
+            $before = $this->snapshot($locked);
+
+            $locked->forceFill([
+                'given_status' => SalaryStatus::Unpaid,
+                'paid_at' => null,
+                'paid_by' => null,
+                'version' => $locked->version + 1,
+            ])->save();
+
+            $after = $this->snapshot($locked->fresh());
+            $this->audit($actor, $locked, 'salary.reverse_unpaid', $before, $after, $reason);
+
+            return $locked->fresh(['employee.user', 'payer']);
+        });
+    }
+
     /**
      * @return array{0: bool, 1: string}
      */

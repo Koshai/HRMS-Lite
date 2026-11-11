@@ -19,8 +19,8 @@ Automate feature and unit tests with PHPUnit. Use Playwright for a small set of 
 | A14 | Super user creates monthly salary | Unique month row, expected salary snapshot — **covered M3A** |
 | A15 | Super user changes current base salary | Prior monthly salary remains unchanged — **covered M3A** |
 | A16 | has_bonus=false and bonus_amount>0 | Rejected when bonus > 0 — **covered M3A** |
-| A17 | Mark salary paid | status paid, paid_at and paid_by set, audit appended — planned M3B |
-| A18 | Undo paid | Reason required, audit preserves prior paid history — planned M3B |
+| A17 | Mark salary paid | status paid, paid_at and paid_by set, audit appended — **covered M3B** |
+| A18 | Undo paid | Reason required, audit preserves prior paid history — **covered M3B** |
 | A19 | Duplicate salary same employee/month | One row only, readable validation error — **covered M3A** |
 | A20 | Employee views My Salaries | Own records only, cannot change paid status — **covered M3A** |
 | A21 | Browser: admin end-to-end workflow | Create employee > attendance > salary paid status |
