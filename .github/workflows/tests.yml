@@ -115,7 +115,8 @@ jobs:
           exit 1
 
       - name: Run attendance and salary tests on MySQL 8
-        run: php artisan test --configuration=phpunit.mysql.xml
+        # Use phpunit directly: `artisan test` already injects --configuration and rejects a second one.
+        run: ./vendor/bin/phpunit --configuration=phpunit.mysql.xml
         env:
           DB_CONNECTION: mysql
           DB_HOST: 127.0.0.1
