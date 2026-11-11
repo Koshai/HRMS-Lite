@@ -10,7 +10,7 @@
             @endcan
             @can('markPaid', $record)
                 @if ($record->isUnpaid())
-                    <form method="POST" action="{{ route('salaries.mark-paid', $record) }}">
+                    <form method="POST" action="{{ route('salaries.mark-paid', $record) }}" onsubmit="return confirm('Mark this salary as Paid? This is an administrative confirmation only, not a bank transfer.')">
                         @csrf
                         <input type="hidden" name="expected_version" value="{{ $record->version }}">
                         <button type="submit" class="rounded-md bg-teal-800 px-3 py-2 text-sm font-medium text-white hover:bg-teal-900">Mark Paid</button>

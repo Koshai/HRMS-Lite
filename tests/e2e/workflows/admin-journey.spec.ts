@@ -71,6 +71,7 @@ test('A21-03 admin salary create, bonus, mark paid, reverse with audit', async (
     await expect(page.getByText('Unpaid').first()).toBeVisible();
     await expect(page.getByText('1500.00').first()).toBeVisible();
 
+    page.once('dialog', (dialog) => dialog.accept());
     await page.getByRole('button', { name: 'Mark Paid' }).click();
     await expect(page.getByText(/Marked as paid/i)).toBeVisible();
     await expect(page.getByText('salary.mark_paid')).toBeVisible();

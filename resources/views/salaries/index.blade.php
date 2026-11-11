@@ -59,7 +59,13 @@
                         <td class="px-4 py-3">{{ $record->salary_amount }}</td>
                         <td class="px-4 py-3">{{ $record->bonus_amount }}</td>
                         <td class="px-4 py-3">{{ $record->totalAmount() }}</td>
-                        <td class="px-4 py-3">{{ $record->given_status->label() }}</td>
+                        <td class="px-4 py-3">
+                            <span @class([
+                                'inline-flex rounded-md px-2 py-0.5 text-xs font-medium',
+                                'bg-emerald-100 text-emerald-900' => $record->isPaid(),
+                                'bg-amber-100 text-amber-900' => $record->isUnpaid(),
+                            ])>{{ $record->given_status->label() }}</span>
+                        </td>
                         <td class="px-4 py-3">
                             <a href="{{ route('salaries.show', $record) }}" class="text-teal-900 hover:underline">View</a>
                         </td>

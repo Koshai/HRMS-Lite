@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminAttendanceController;
 use App\Http\Controllers\AdminSalaryController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeAdminController;
 use App\Http\Controllers\ForcedPasswordChangeController;
 use App\Http\Controllers\MyAttendanceController;
@@ -18,7 +19,7 @@ Route::middleware(['auth', 'active'])->group(function () {
         ->name('password.forced.update');
 
     Route::middleware('password.changed')->group(function () {
-        Route::view('dashboard', 'dashboard')->name('dashboard');
+        Route::get('dashboard', DashboardController::class)->name('dashboard');
 
         Route::get('my-profile', [MyProfileController::class, 'show'])->name('profile.mine');
         Route::get('my-profile/photo', [MyProfileController::class, 'photo'])->name('profile.mine.photo');

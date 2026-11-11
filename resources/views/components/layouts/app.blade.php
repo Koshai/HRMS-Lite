@@ -18,7 +18,7 @@
                     <a href="{{ route('dashboard') }}" class="text-lg font-semibold tracking-tight text-teal-900">HRMS Lite</a>
                     <p class="text-xs text-slate-500">{{ auth()->user()->role->label() }}</p>
                 </div>
-                <nav class="flex flex-wrap items-center gap-4 text-sm">
+                <nav class="flex max-w-full flex-wrap items-center gap-x-4 gap-y-2 text-sm" aria-label="Primary">
                     <a href="{{ route('dashboard') }}" class="text-slate-700 hover:text-teal-800">Dashboard</a>
                     @can('viewAny', App\Models\Employee::class)
                         <a href="{{ route('employees.index') }}" class="text-slate-700 hover:text-teal-800">Employees</a>
@@ -44,7 +44,7 @@
 
         <main class="mx-auto max-w-5xl px-4 py-8">
             @if (session('status'))
-                <p class="mb-4 rounded-md bg-teal-50 px-3 py-2 text-sm text-teal-900">{{ session('status') }}</p>
+                <p class="mb-4 rounded-md bg-teal-50 px-3 py-2 text-sm text-teal-900" role="status">{{ session('status') }}</p>
             @endif
             {{ $slot }}
         </main>
